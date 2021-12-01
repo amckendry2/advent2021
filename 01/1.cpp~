@@ -1,0 +1,35 @@
+#include <string>
+#include <fstream>
+#include <iostream>
+using namespace std;
+
+void part1(string inputPath){
+    ifstream input{argv[1]};
+    int lastVal = 0;
+    int largerCount = 0;
+    string line;
+    while(getline(input, line)){
+	int val = stoi(line);
+	if(lastVal != 0 && val > lastVal)
+	    largerCount++;
+	lastVal = val;
+    }
+    cout << largerCount << endl;
+}
+
+void part2(string inputPath){
+    
+}
+
+
+int main(int argc, char* argv[]){
+    if(argc < 3){
+	cout << "args: [1/2] [input data path]"
+    }
+    if(argv[1] == "1")
+	part1(argv[2]);
+    if(argv[2] == "2")
+	part2(argv[2]);
+    return 0;
+    
+}

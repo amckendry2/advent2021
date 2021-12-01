@@ -1,0 +1,16 @@
+#include <string>
+#include <fstream>.
+
+int main(int argc, char* argv[]){
+    ifstream input{argv[1]};
+    int lastVal = 0;
+    int largerCount = 0;
+    string line;
+    while(getline(input, line)){
+	int val = stoi(line);
+	if(lastVal != 0 && val > lastVal)
+	    largerCount++;
+	lastVal = val;
+    }
+    return largerCount;
+}
