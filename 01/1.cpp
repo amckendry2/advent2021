@@ -7,9 +7,8 @@ using namespace std;
 void part1(ifstream& input){
     int lastVal = 0;
     int largerCount = 0;
-    string line;
-    while(getline(input, line)){
-	int val = stoi(line);
+    int val;
+    while(input >> val){
 	if(lastVal != 0 && val > lastVal)
 	    largerCount++;
 	lastVal = val;
@@ -30,13 +29,13 @@ void part2(ifstream& input){
 
 int main(int argc, char* argv[]){
     if(argc < 3){
-	cout << "please supply args: [1/2] [input data path]" << endl;
-	return 1;
+        cout << "please supply args: [1/2] [input data path]" << endl;
+        return 1;
     }
     ifstream input{argv[2]}; 
     if((string)argv[1] == "1")
-	part1(input);
+        part1(input);
     if((string)argv[1] == "2")
-	part2(input);
+        part2(input);
     return 0;
 }
