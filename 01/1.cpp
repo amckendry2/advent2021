@@ -4,11 +4,10 @@
 #include <iostream>
 using namespace std;
 
-void part1(ifstream& input){
+void part1(vector<int> vals){
     int lastVal = 0;
     int largerCount = 0;
-    int val;
-    while(input >> val){
+    for(int val : vals){
 	if(lastVal != 0 && val > lastVal)
 	    largerCount++;
 	lastVal = val;
@@ -16,11 +15,7 @@ void part1(ifstream& input){
     cout << largerCount << endl;
 }
 
-void part2(ifstream& input){
-    int v;
-    vector<int> vals;
-    while(input >> v)
-	vals.push_back(v);
+void part2(vector<int> vals){
     int count = 0;
     for(auto it = vals.begin(); it < vals.end() - 3; it++)
 	count += (int)*(it + 3) > *it;
@@ -28,14 +23,21 @@ void part2(ifstream& input){
 }
 
 int main(int argc, char* argv[]){
+    
     if(argc < 3){
         cout << "please supply args: [1/2] [input data path]" << endl;
         return 1;
     }
-    ifstream input{argv[2]}; 
+    
+    int v;
+    vector<int> vals;
+    ifstream input{argv[2]};
+    while(input >> v)
+	vals.push_back(v);
+    
     if((string)argv[1] == "1")
-        part1(input);
+        part1(vals);
     if((string)argv[1] == "2")
-        part2(input);
+        part2(vals);
     return 0;
 }
