@@ -23,7 +23,7 @@ void part2(ifstream& input){
 	vals.push_back(v);
     int count = 0;
     for(auto it = vals.begin(); it < vals.end() - 3; it++)
-	count += *(it + 3) > *it ? 1 : 0;
+	count += (int)*(it + 3) > *it;
     cout << count << endl;
 }
 
