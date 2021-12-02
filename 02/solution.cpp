@@ -20,11 +20,12 @@ int main(){
     int aim = 0;
     ifstream input {"input"};
     for(iter it = iter(input); it != iter(); it++){
-        comp d = dirs[*it];
+        auto d = dirs[*it];
 	int a = stoi(*++it);
 	pos1 += d * a;
 	pos2 += comp{ 1, (aim += d.imag() * a)} * a * d.real();
     }
     cout << pos1.real() * pos1.imag() << endl;
     cout << pos2.real() * pos2.imag() << endl;
+    return 0;
 }
