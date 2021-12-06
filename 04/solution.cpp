@@ -45,12 +45,30 @@ int main(int argc, char* argv[]){
 		return win;
 	};
 
+	vector<int> winnerList;
+	int finalTotal = 0;
+
 	int cardArea = pow(cardWidth, 2);	
 
 	for(auto pickIt = data.begin(); pickIt < data.begin() + numPicks; pickIt++){
-		for(auto cardIt = data.begin() + numPicks; cardIt < data.end(); cardIt += cardArea){
+		
+		auto cardIt = data.begin() + numPicks;
+
+		while(find(winnerList.begin(), winnerList.end(), cardIt - data.begin()) != winnerList.end())
+			cardIt += cardArea;
+
+		if(cardIt == data.end()){
+			cout << finalTotal << endl;
+			return 0;
+		}
+
+		for(; cardIt < data.end(); cardIt += cardArea){
+			
+			if(find(winnerList.begin(), winnerList.end(), cardIt - data.begin()) != winnerList.end())
+				continue;
 
 			callNum(cardIt, *pickIt, cardArea);
+
 			int cardTotal = 0;
 			bool cardWon = false;
 
@@ -62,8 +80,8 @@ int main(int argc, char* argv[]){
 			}
 
 			if(cardWon){
-				cout << cardTotal * (*pickIt) << endl;
-				return 0;
+				finalTotal = cardTotal * (*pickIt);
+				winnerList.push_back(cardIt - data.begin());
 			}
 		}
 	}
