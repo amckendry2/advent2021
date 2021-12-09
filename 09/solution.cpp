@@ -3,10 +3,7 @@
 #include <unordered_set>
 #include <iostream>
 #include <numeric>
-#include <chrono>
 using namespace std;
-typedef chrono::high_resolution_clock Time;
-typedef chrono::milliseconds ms;
 
 //reading input data into vector
 vector<int> readData(int& width){
