@@ -10,17 +10,17 @@ vector<int> readData(int& width){
 	string line;
 	vector<int> data;
 	getline(cin, line);
-		for(char c : line)
+		for(char& c : line)
 			data.push_back((int)c - 48);
 	width = data.size();
 	while(getline(cin, line))
-		for(char c : line)
+		for(char& c : line)
 			data.push_back((int)c - 48);	
 	return data;
 }
 //==============================
 
-bool isLowPoint(vector<int>& data, int idx, int width){
+bool isLowPoint(vector<int>& data, const int& idx, const int& width){
 	int val = data[idx];
 	bool left = idx % width == 0 || val < data[idx - 1];
 	bool right = idx % width == width - 1 || val < data[idx + 1];
@@ -29,7 +29,7 @@ bool isLowPoint(vector<int>& data, int idx, int width){
 	return left && right && above && below;						
 }
 
-int getBasin(vector<int>& terrain, unordered_set<int>& excl, int idx, int width){
+int getBasin(const vector<int>& terrain, unordered_set<int>& excl, const int& idx, const int& width){
 	excl.insert(idx);
 	if(terrain[idx] == 9)
 		return 0;
@@ -50,11 +50,9 @@ int main(){
 	vector<int> terrain = readData(width);
 	unordered_set<int> excl;
 	vector<int> basins;
-	for(int i = 0; i < terrain.size(); i++){
-		if(terrain[i] != 9 && !excl.contains(i) && isLowPoint(terrain, i, width)){
+	for(int i = 0; i < terrain.size(); i++)
+		if(terrain[i] != 9 && !excl.contains(i) && isLowPoint(terrain, i, width))
 			basins.push_back(getBasin(terrain, excl, i, width));
-		}
-	}
 	sort(basins.begin(), basins.end());
 	cout << accumulate(basins.end() - 3, basins.end(), 1, multiplies<int>()) << endl;	
 	return 0;
