@@ -5,30 +5,10 @@
 #include <map>
 using namespace std;
 
-bool isOpener(char& c){
-	return c == '(' || c == '[' || c == '{' || c == '<';
-}
-
-map<char, int> part1ScoreTable {
-	{')', 3},
-	{']', 57},
-	{'}', 1197},
-	{'>', 25137}
-};
-
-map<char, int> part2ScoreTable {
-	{'(', 1},
-	{'[', 2},
-	{'{', 3},
-	{'<', 4}
-};
-
-map<char, char> pairs {
-	{'(', ')'},
-	{'[', ']'},
-	{'{', '}'},
-	{'<', '>'}
-};
+bool isOpener(char& c){return c == '(' || c == '[' || c == '{' || c == '<';}
+map<char, int> part1ScoreTable {{')',3},{']',57},{'}',1197},{'>',25137}};
+map<char, int> part2ScoreTable {{'(',1},{'[',2},{'{',3},{'<',4}};
+map<char, char> pairs {{'(',')'},{'[',']'},{'{','}'},{'<','>'}};
 
 int main(){
 	int part1Score = 0;
