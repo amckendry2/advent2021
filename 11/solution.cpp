@@ -20,14 +20,12 @@ void flash(vector<int>& data, int idx, int origin, int width, int& flashes){
 	flashes++;
 	data[idx] = 0;
 	for(int a : getAdjacents(idx, width, data.size())){
-		if(a >= 0 && a < data.size()){
-			//don't add to previously flashed spaces
-			if((a > origin || data[a] != 0))
-				data[a]++;
-			//flash recursively at lower indexes
-			if(a < origin && data[a] > 9)
-				flash(data, a, origin, width, flashes);
-		}
+		//don't add to previously flashed spaces
+		if((a > origin || data[a] != 0))
+			data[a]++;
+		//flash recursively at lower indexes
+		if(a < origin && data[a] > 9)
+			flash(data, a, origin, width, flashes);
 	}
 }
 
