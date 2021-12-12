@@ -17,7 +17,7 @@ bool isUpper(const string& s){
 	return all_of(s.begin(), s.end(), [](char c){return isupper(c);});
 }
 
-void insertCave(unordered_map<string, Cave>& caves, string id, string connection){
+void insertCave(unordered_map<string, Cave>& caves, const string& id, const string& connection){
 	auto caveIt = caves.find(id);
 	if(caveIt != caves.end()){
 		caveIt->second.connections.push_back(connection);
@@ -42,7 +42,7 @@ int getPaths(unordered_map<string, Cave>& caves, const string& start, vector<str
 		}
 	}
 	int paths = 0;
-	for(string conn : caves[start].connections){
+	for(string& conn : caves[start].connections){
 		paths += getPaths(caves, conn, excl, didTwice);
 	}
 	return paths;
