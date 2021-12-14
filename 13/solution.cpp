@@ -75,7 +75,7 @@ int main(int argc, char* argv[]){
 			} else { 
 				drawHeight /= 2;
 			}
-        }
+		}
 	}
 	drawDots(dots, width, height, drawWidth, drawHeight);
     return 0;
