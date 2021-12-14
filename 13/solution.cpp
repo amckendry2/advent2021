@@ -21,16 +21,6 @@ void foldPoints(vector<long long int>& dots, int foldPoint, bool horizontal, int
 	}
 }
 
-int countDots(const vector<long long int>& dots){
-	vector<long long int> unique;
-	for(auto d : dots){
-		if(count(unique.begin(), unique.end(), d)){
-			unique.push_back(d);
-		}
-	}
-	return unique.size();
-}
-
 void drawDots(const vector<long long int>& dots, int width, int height, int drawWidth, int drawHeight){
 	for(int y = 0; y < drawHeight; y++){
 		for(int x = 0; x < drawWidth; x++){
