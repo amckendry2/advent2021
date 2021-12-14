@@ -16,9 +16,7 @@ void addCount(unordered_map<string, long long int>& countMap, string key, long l
 
 long long int mostMinusLeast(const unordered_map<string, long long int>& polymers, string firstLetter, string lastLetter){
 	unordered_map<string, long long int> count;
-	long long int total = 1;
 	for(auto p : polymers){
-		total += p.second;
 		for(char c : p.first){
 			string s{c};
 			addCount(count, s, p.second);
