@@ -71,8 +71,7 @@ int main(int argc, char* argv[]){
 			addCount(nextPolymerState, toAdd.first, p.second);
 			addCount(nextPolymerState, toAdd.second, p.second); 
 		}
-		polymerState = nextPolymerState;
-		nextPolymerState.clear();
+		polymerState = move(nextPolymerState);
 	}
 	cout << mostMinusLeast(polymerState, firstLetter, lastLetter) << endl;
 }
