@@ -2,19 +2,20 @@
 #include <string>
 #include <sstream>
 #include <iostream>
-#include <string>
 #include <regex>
 using namespace std;
 
 void foldPoints(vector<long long int>& dots, int foldPoint, bool horizontal, int width){
 	for(size_t i = 0; i < dots.size(); i++){
 		if(horizontal){
-			if((dots[i] % width) > foldPoint){
-				dots[i] -= ((dots[i] % width) - foldPoint) * 2;
+			int x = dots[i] % width;
+			if(x > foldPoint){
+				dots[i] -= (x - foldPoint) * 2;
 			}
 		} else {
-			if(dots[i] / width > foldPoint){
-				dots[i] -= (dots[i] / width - foldPoint) * width * 2;
+			int y = dots[i] / width;
+			if(y > foldPoint){
+				dots[i] -= (y - foldPoint) * width * 2;
 			}
 		}
 	}
