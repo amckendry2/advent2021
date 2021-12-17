@@ -5,8 +5,6 @@
 #include <chrono>
 typedef std::pair<int, int> fPair;
 typedef std::priority_queue<fPair, std::vector<fPair>, std::greater<fPair>> fQueue;
-typedef std::chrono::high_resolution_clock Clock;
-typedef std::chrono::milliseconds ms;
 
 class Terrain {
 	public:
