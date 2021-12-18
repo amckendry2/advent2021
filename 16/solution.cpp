@@ -13,14 +13,14 @@ int popInt(std::stringstream& ss, int len){
 	return stoi(popBits(ss, len), nullptr, 2);
 }
 
-int readLiteral(std::stringstream& ss, int& bitsRead){
+long readLiteral(std::stringstream& ss, int& bitsRead){
 	std::string literal;
 	while(popInt(ss, 1) == 1){
 		literal += popBits(ss, 4);	
 		bitsRead += 5;
 	}
 	bitsRead += 5;
-	return stoi(literal + popBits(ss, 4), nullptr, 2);
+	return std::stol(literal + popBits(ss, 4), nullptr, 2);
 }
 
 int readPacket(std::stringstream& ss, int& verTotal){
@@ -51,7 +51,6 @@ int main(){
 	std::stringstream transmission;
 	std::string d;
 	getline(std::cin, d);
-	std::cout << d << std::endl;
 	for(char c : d){
 		int intval = (c >= 'A') ? (c - 'A' + 10) : (c - '0');
 		transmission << std::bitset<4>(intval);
