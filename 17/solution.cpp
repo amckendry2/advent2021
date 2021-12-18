@@ -3,15 +3,10 @@
 #include <regex>
 #include <iostream>
 
-int getYAt(int v, int t){
-	return t * (v - 0.5 * (t - 1));
-}
-
 int getXAt(int v, int t){
 	if(t > abs(v)) t = abs(v);
 	return t * 0.5 * (2 * v + 1 - t);  
 }
-
 
 int main(){
 	std::regex coordsRegex{R"(([-\d]+)..([-\d]+), y=([-\d]+)..([-\d]+))"};	
