@@ -1,7 +1,11 @@
 #include <string>
+#include <numeric>
+#include <vector>
 #include <bitset>
 #include <sstream>
 #include <iostream>
+
+enum Operator { SUM, PRODUCT, MIN, MAX, LIT, GT, LT, EQ };
 
 std::string popBits(std::stringstream& ss, int len){
 	std::string s(len, '\0');
@@ -9,42 +13,60 @@ std::string popBits(std::stringstream& ss, int len){
 	return s;
 }
 
-int popInt(std::stringstream& ss, int len){
-	return stoi(popBits(ss, len), nullptr, 2);
+unsigned long long popInt(std::stringstream& ss, int len){
+	return stoull(popBits(ss, len), nullptr, 2);
 }
 
-long readLiteral(std::stringstream& ss, int& bitsRead){
+unsigned long long readLiteral(std::stringstream& ss, int& bitsRead){
 	std::string literal;
 	while(popInt(ss, 1) == 1){
 		literal += popBits(ss, 4);	
 		bitsRead += 5;
 	}
 	bitsRead += 5;
-	return std::stol(literal + popBits(ss, 4), nullptr, 2);
+	return std::stoull(literal + popBits(ss, 4), nullptr, 2);
 }
 
-int readPacket(std::stringstream& ss, int& verTotal){
+unsigned long long readPacket(std::stringstream& ss, int& verTotal, int& bits){
+	unsigned long long val;
+	std::vector<unsigned long long> operands;
+	int myBits = 6;
+	int childBits = 0;
 	verTotal += popInt(ss, 3); 
-	int type = popInt(ss, 3); 
-	int bitsRead = 6;
-	if(type == 4){
-		readLiteral(ss, bitsRead);
+	Operator op = static_cast<Operator>(popInt(ss, 3)); 
+	if(op == LIT){
+		val = readLiteral(ss, myBits);
 	} else {
 		if(popInt(ss, 1)){
 			int numPackets = popInt(ss, 11);
-			bitsRead += 12;
 			while(numPackets-- > 0){
-				bitsRead += readPacket(ss, verTotal);
+				operands.push_back(readPacket(ss, verTotal, childBits));
 			}
+			myBits += 12;
 		} else {
 			int packetsLen = popInt(ss, 15);
-			bitsRead += 16 + packetsLen;
-			while(packetsLen > 0){
-				packetsLen -= readPacket(ss, verTotal);
+			while(childBits < packetsLen){
+				operands.push_back(readPacket(ss, verTotal, childBits));
 			}
+			myBits += 16;
 		}
 	}
-	return bitsRead;
+	if(op == SUM)
+		val = std::accumulate(operands.begin(), operands.end(), (unsigned long long)0);
+	if(op == PRODUCT)
+		val = std::accumulate(operands.begin(), operands.end(), (unsigned long long)1, std::multiplies<unsigned long long>());
+	if(op == MIN)
+		val = *std::min_element(operands.begin(), operands.end());
+	if(op == MAX)
+		val = *std::max_element(operands.begin(), operands.end());
+	if(op == GT)
+		val = (unsigned long long)(operands[0] > operands[1]);
+	if(op == LT)
+		val = (unsigned long long)(operands[0] < operands[1]);
+	if(op == EQ)
+		val = (unsigned long long)(operands[0] == operands[1]);
+	bits += myBits + childBits;
+	return val;
 }
 
 int main(){
@@ -56,7 +78,9 @@ int main(){
 		transmission << std::bitset<4>(intval);
 	}
 	int verTotal = 0;
-	readPacket(transmission, verTotal);
+	int totalBits = 0;
+	unsigned long long calcTotal = readPacket(transmission, verTotal, totalBits);
 	std::cout << "Part1: " << verTotal << std::endl;
+	std::cout << "Part2: " << calcTotal << std::endl;
 	return 0;
 }
