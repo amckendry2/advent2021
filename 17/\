@@ -1,0 +1,9 @@
+#include <map>
+#include <string>
+#include <regex>
+#include <iostream>
+
+int main(){
+	std::regex coordsRegex{R"(([-\d]+)..([-\d]+), y=([-\d]+)..([-\d]+))"};	
+	return 0;
+}
