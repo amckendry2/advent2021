@@ -1,241 +1,151 @@
-#include <tuple>
 #include <vector>
 #include <cmath>
 #include <iostream>
 #include <string>
 using namespace std;
 
-struct SPair {
-	
-	bool isLeft;
-	bool isTop;
-	SPair* left;
-	SPair* right;
-	SPair* parent;
-	bool isLit;
-	int litVal;
-	
-	SPair(){
-		isTop = true;
-		isLit = false;
-		isLeft = true;
-	}
-	SPair(SPair* p, bool isL){ //create pair
-		isTop = false;
-		isLeft = isL;
-		isLit = false;
-		parent = p;
-	}
-	SPair(int a, SPair* p, bool isL){ //create literal num
-		isTop = false;
-		isLeft = isL;
-		isLit = true;
-		litVal = a;
-		parent = p;
-	}
-	void leftLit(int a){ 
-		left = new SPair{a, this, true};
-	}
-	void leftPair(){ 
-		left = new SPair{this, true};
-	}
-	void rightLit(int b){ 
-		right = new SPair{b, this, false}; 
-	}
-	void rightPair(){ 
-		right = new SPair{this, false};	
-	}
-
-	SPair* findParent(bool lVal, int& depth){
-		SPair* ptr = this;
-		while(ptr -> isLeft != lVal){
-			ptr = ptr -> parent;
-			depth--;
-			if(ptr -> isTop){
-				return nullptr;
-			}
-		}
-		return ptr;
-	}
-
-	SPair* findChildLiteral(bool lVal, int& depth){
-		SPair* ptr = this;
-		while(!ptr -> isLit){
-			if(lVal){
-				ptr = ptr -> left;
-			} else {
-				ptr = ptr -> right;
-			}
-			depth++;
-		}
-		return ptr;
-	}
-
-	SPair* goRight(){
-		return parent->right;
-	}
-
-	SPair* goLeft(){
-		return parent->left;
-	}
-
-	void explode(){
-		cout << "SPLODE" << endl;
-		int depth;
-		SPair* lPtr = findParent(false, depth); 
-		if(lPtr != nullptr){
-			lPtr = lPtr -> goLeft() -> findChildLiteral(false, depth); 
-			lPtr -> litVal += left -> litVal;
-		}
-		
-		SPair* rPtr = findParent(true, depth); 
-		if(rPtr != nullptr){
-			rPtr = rPtr -> goRight() -> findChildLiteral(true, depth);
-			rPtr -> litVal += right -> litVal;
-		}
-		isLit = true;
-		litVal = 0;
-		delete left;
-		delete right;
-	}
-
-	void split(){
-		isLit = false;
-		leftLit(floor(litVal / 2.0));
-		rightLit(ceil(litVal / 2.0));
-	}
-
+struct SDigit {
+	int val;
+	int depth;
 };
 
-SPair buildPairFromString(string data){
-	bool leftMode = true;
-	SPair top = SPair();
-	SPair* current = &top;
-	for(int i = 1; i < data.length() - 1; i++){
+typedef vector<SDigit> SNum;
+
+SNum buildNumFromString(string data){
+	SNum ret;
+	int depth = 0;
+	for(int i = 0; i < data.length(); i++){
 		if(data[i] == '['){
-			if(leftMode){
-				current->leftPair();
-				current = current->left;
-			} else {
-				current->rightPair();
-				current = current->right;
-			}
-			leftMode = true;
+			depth++;
+			ret.push_back({-1, depth});
 		}
 		if(data[i] == ']'){
-			current = current->parent;
-		}
-		if(data[i] == ','){
-			leftMode = false;
+			ret.push_back({-1, depth});
+			depth--;
 		}
 		if(isdigit(data[i])){
 			string num {data[i]};
 			while(isdigit(data[i + 1])){
 				i++;
-				num += data[i];
+			num += data[i];
 			}
-			if(leftMode){
-				current->leftLit(stoi(num));
-			} else {
-				current->rightLit(stoi(num));
-			}
+			ret.push_back({stoi(num), depth});
 		}	
 	}
-	return top;
+	return ret;
 }
 
-bool iterateLeftToRight(SPair*& ptr, int& depth, string& outString){
-	int depthChange = 0;
-	if(!ptr -> isLit){
-		ptr = ptr -> findChildLiteral(true, depthChange);		
-		for(int i = 0; i < depthChange; i++){
-			outString += "[";
+void explodeAt(SNum& sn, int idx){
+	auto it = sn.begin() + idx;
+	auto start = it;
+	auto end = it + 4;
+	int depth = start -> depth;
+	while(it-- != sn.begin()){
+		if(it -> val != -1){
+			it -> val += (start + 1) -> val;
+			break;
 		}
-		outString += to_string(ptr -> litVal);
-	} else if(ptr -> isLit && ptr -> isLeft){
-		ptr = ptr -> goRight();
-		outString += ",";
+	}
+	it = end - 1;
+	while(it++ != sn.end()){
+		if(it -> val != -1){
+			it -> val += (start + 2) -> val;
+			break;
+		}
+	}
+	sn.insert(sn.erase(start, end),{0, depth - 1});
+}
+
+void splitAt(SNum& sn, int idx){
+	int depth = sn[idx].depth;
+	int lNum = floor(sn[idx].val / 2.0);
+	int rNum = ceil(sn[idx].val / 2.0);
+	sn.insert(sn.erase(sn.begin() + idx), 
+			{{-1, depth + 1},
+			{lNum, depth + 1},
+			{rNum, depth + 1},
+			{-1, depth + 1}});
+}
+
+int recursiveMagnitude(SNum& sn, int& idx){
+	int leftVal = 0;
+	int rightVal = 0;
+	if(sn[++idx].val != -1){
+		leftVal = sn[idx].val;
 	} else {
-		outString += to_string(ptr -> litVal);
-		ptr = ptr -> findParent(true, depthChange);
-		for(int i = depthChange; i < 0; i++){
-			outString += "]";
-		}
-		if(ptr == nullptr){
-			return false;
-		}
-		ptr = ptr -> goRight();
-		outString += ",";
+		leftVal = recursiveMagnitude(sn, idx);
 	}
-
-	depth += depthChange;
-
-	return true;
+	if(sn[++idx].val != -1){
+		rightVal = sn[idx].val;
+	} else { 
+		rightVal = recursiveMagnitude(sn, idx);
+	}
+	idx++;
+	return 3 * leftVal + 2 * rightVal;
 }
 
-void doExplosions(SPair& sp){
-	cout << "doin explosions" << endl;
-	SPair* ptr = &sp;
-	int depth = 0;
-	string outString;
-	while(iterateLeftToRight(ptr, depth, outString)){
-		if(depth > 4){
-			ptr -> parent -> explode();
-			ptr = &sp;
-			depth = 0;
-			outString = "";
-			continue;	
+int getMagnitude(SNum& sn){
+	int idx = 0;
+	return recursiveMagnitude(sn, idx);
+}
+
+bool reduceNum(SNum& sn){
+	for(int i = 0; i < sn.size(); i++){
+		if(sn[i].depth > 4){
+			explodeAt(sn, i);
+			return true;
 		}
 	}
-	cout << "after expl: " << outString << endl;
-}
-
-void doSplits(SPair& sp){
-	cout << "doin splits" << endl;
-	SPair* ptr = &sp;
-	int depth = 0;
-	string outString;
-	while(iterateLeftToRight(ptr, depth, outString)){
-		if(ptr -> litVal >= 10){
-			ptr -> split();
-			ptr = &sp;
-			depth = 0;
-			outString = "";
-			continue;
+	for(int j = 0; j < sn.size(); j++){
+		if(sn[j].val >= 10){
+			splitAt(sn, j);
+			return true;
 		}
 	}
-	cout << "after split: " << outString << endl;
+	return false;
 }
 
-string getNewString(SPair& sp){
-	cout << "gettin string" << endl;
-	SPair* ptr = &sp;
-	int depth = 0;
-	string outString;
-	while(iterateLeftToRight(ptr, depth, outString));
-	return outString;
+
+SNum addSNums(SNum a, SNum b){
+	SNum ret{{-1, 1}};
+	for(auto sd : a){
+		sd.depth++;
+		ret.push_back(sd);
+	}
+	for(auto sd : b){
+		sd.depth++;
+		ret.push_back(sd);
+	}
+	ret.push_back({-1, 1});
+	while(reduceNum(ret));
+	return ret;
 }
 
-string concatPairStrings(string a, string b){
-	return "[" + a + "," + b + "]";
-}
-
-string addStrings(string a, string b){
-	SPair sum = buildPairFromString(concatPairStrings(a, b));
-	doExplosions(sum);
-	doSplits(sum);
-	doExplosions(sum);
-	doSplits(sum);
-	return getNewString(sum);
-}
 
 int main(){		
-	vector<string> nums;
+	vector<SNum> nums;
 	string line;
 	while(getline(cin, line)){
-		nums.push_back(line);
+		nums.push_back(buildNumFromString(line));
 	}
-	cout << addStrings(nums[0], nums[1]) << endl;
+	SNum sum {nums[0]};
+	for(int i = 1; i < nums.size(); i++){
+		sum = addSNums(sum, nums[i]);	
+	}
+	cout << "Part 1: " << getMagnitude(sum) << endl;
 
+	int largestSum = 0;
+	for(int i = 0; i < nums.size(); i++){
+		for(int j = 0; j < nums.size(); j++){
+			if(i != j){
+				SNum sum = addSNums(nums[i], nums[j]);
+				int mag = getMagnitude(sum);
+				if(mag > largestSum){
+					largestSum = mag;
+				}
+			}
+		}
+	}
+	cout << "Part 2: " << largestSum << endl;
 	return 0;
 }
