@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <deque>
+#include <vector>
 #include <regex>
 using namespace std;
 
@@ -11,9 +11,9 @@ int main(){
 	int modAdd = 0;
 	int idx = 0;
 
-	deque<int> highInputs(14, 9);
-	deque<int> lowInputs(14, 0);
-	deque<pair<int, int>> instrStack;
+	vector<int> highInputs(14, 9);
+	vector<int> lowInputs(14, 0);
+	vector<pair<int, int>> instrStack;
 
 	string line;
 	smatch matches;
@@ -31,8 +31,8 @@ int main(){
 			modAdd = stoi(matches.str(1));
 		if(regex_search(line, matches, endRegex)){
 			if(divStep){
-				auto p = instrStack.front();
-				instrStack.pop_front();
+				auto p = instrStack.back();
+				instrStack.pop_back();
 
 				lowInputs[p.first] = max(1, min(9, 1 - (diff + p.second)));
 				lowInputs[idx] = max(1, min(9, 1 + diff + p.second));
@@ -41,7 +41,7 @@ int main(){
 				highInputs[idx] = max(1, min(9, 9 + diff + p.second));
 
 			} else {
-				instrStack.push_front({idx, modAdd});
+				instrStack.push_back({idx, modAdd});
 			}
 			idx++;
 		}
