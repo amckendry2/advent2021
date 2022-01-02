@@ -139,7 +139,6 @@ vector<MoveData> getMoves(int idx, string& state){
 	if(roomReady && pathClear(col, dest.col, state)){
 		moves.push_back(destIdx);				
 	}
-
 	//get costs & new states	
 	for(int m : moves){
 		int cost = pieces[type].cost * getDist(idx, m);
